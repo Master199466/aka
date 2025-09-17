@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Академия Искусственного Интеллекта Анастасии Пушкаревой</title>
+  <!-- Tailwind via CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Fallback styles if Tailwind CDN is blocked */
+    .btn { padding: .75rem 1rem; border-radius: .75rem; background: #2563eb; color: #fff; }
+    .card { background: #fff; border-radius: .75rem; padding: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .hidden { display: none; }
+    canvas { background: #f8fafc; border-radius: .5rem; border: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <header class="p-6 border-b bg-white sticky top-0 z-10">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <h1 class="text-2xl font-bold">Академия Искусственного Интеллекта Анастасии Пушкаревой</h1>
+      <nav class="space-x-2">
+        <button class="px-3 py-2 rounded-lg hover:bg-gray-100" data-goto="home">Главная</button>
+        <button class="px-3 py-2 rounded-lg hover:bg-gray-100" data-goto="course">Курс</button>
+        <button class="px-3 py-2 rounded-lg hover:bg-gray-100" data-goto="cards">Карточки</button>
+        <button class="px-3 py-2 rounded-lg hover:bg-gray-100" data-goto="perceptron">Перцептрон</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6">
+    <!-- HOME -->
+    <section id="home" class="space-y-6">
+      <div class="text-center">
+        <h2 class="text-3xl font-extrabold mb-2">Учись искусственному интеллекту 5–10 минут в день</h2>
+        <p class="text-gray-600 mb-6">Мини‑уроки, квизы, карточки с интервальными повторениями и наглядные интерактивы.</p>
+        <button class="btn" data-goto="course">Начать обучение</button>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="card"><h3 class="font-semibold mb-1">Мини‑уроки</h3><p class="text-sm text-gray-600">Коротко, по делу, с примерами.</p></div>
+        <div class="card"><h3 class="font-semibold mb-1">Квизы</h3><p class="text-sm text-gray-600">Быстрая проверка понимания.</p></div>
+        <div class="card"><h3 class="font-semibold mb-1">Spaced Repetition</h3><p class="text-sm text-gray-600">Повторяй в нужный момент — запоминай надолго.</p></div>
+      </div>
+    </section>
+
+    <!-- COURSE / LESSON -->
+    <section id="course" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold">Курс: Основы машинного обучения</h2>
+        <div class="text-sm text-gray-600">Прогресс: <span id="progress">0</span>/1</div>
+      </div>
+
+      <div class="card">
+        <h3 class="text-xl font-semibold">Урок 1. Что такое ML?</h3>
+        <p class="text-gray-700 mt-2">ML — это методы, позволяющие алгоритмам учиться на данных. Основные типы задач: классификация, регрессия, кластеризация.</p>
+
+        <div class="mt-4 border-t pt-4">
+          <h4 class="font-semibold mb-2">Квиз</h4>
+          <p class="mb-2">Что такое переобучение?</p>
+          <div class="space-y-2">
+            <button class="w-full text-left px-3 py-2 border rounded-lg hover:bg-gray-50 quiz-option" data-i="0">Высокая ошибка на train</button>
+            <button class="w-full text-left px-3 py-2 border rounded-lg hover:bg-gray-50 quiz-option" data-i="1">Высокая ошибка на test</button>
+          </div>
+          <p id="quiz-result" class="mt-3 font-semibold"></p>
+          <div class="mt-4">
+            <button id="mark-complete" class="px-4 py-2 rounded-lg border hover:bg-gray-50">Отметить урок завершённым</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARDS (Spaced Repetition) -->
+    <section id="cards" class="hidden space-y-4">
+      <h2 class="text-2xl font-bold">Карточки для повторения</h2>
+      <div id="cards-container" class="card">
+        <div id="no-cards" class="text-gray-600">Нет карточек к повторению. Пройдите урок — карточки появятся автоматически.</div>
+        <div id="card-ui" class="hidden">
+          <div class="mb-2 text-lg font-semibold" id="card-front">Bias-Variance</div>
+          <div class="mb-4 text-gray-700" id="card-back">Компромисс смещения-дисперсии</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-sm text-gray-600 mb-1">Оцени ответ (0–5):</span>
+            <div class="flex gap-2">
+              <button class="px-3 py-1 border rounded" data-q="0">0</button>
+              <button class="px-3 py-1 border rounded" data-q="1">1</button>
+              <button class="px-3 py-1 border rounded" data-q="2">2</button>
+              <button class="px-3 py-1 border rounded" data-q="3">3</button>
+              <button class="px-3 py-1 border rounded" data-q="4">4</button>
+              <button class="px-3 py-1 border rounded" data-q="5">5</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-sm text-gray-500">Алгоритм: упрощённый SM‑2. Данные хранятся локально (localStorage).</p>
+    </section>
+
+    <!-- PERCEPTRON DEMO -->
+    <section id="perceptron" class="hidden space-y-4">
+      <h2 class="text-2xl font-bold">Симуляция перцептрона</h2>
+      <div class="card">
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="grow">
+            <canvas id="plot" width="480" height="320"></canvas>
+          </div>
+          <div class="w-full md:w-64 space-y-2">
+            <label class="block">Эпохи: <input id="epochs" type="number" min="1" max="100" value="10" class="border rounded px-2 py-1 w-20"></label>
+            <label class="block">LR: <input id="lr" type="number" step="0.01" min="0.01" max="1" value="0.1" class="border rounded px-2 py-1 w-20"></label>
+            <div class="flex gap-2">
+              <button id="train" class="btn">Обучить</button>
+              <button id="reset" class="px-4 py-3 rounded-xl border">Сброс</button>
+            </div>
+            <p class="text-sm text-gray-600">Набор точек — синтетический, 2 класса. Линия — решающая граница.</p>
+            <pre id="wb" class="text-xs bg-gray-50 p-2 rounded border"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="p-6 text-center text-sm text-gray-500">
+    © <span id="year"></span> Академия Искусственного Интеллекта Анастасии Пушкаревой
+  </footer>
+
+  <script>
+    // -------- Simple SPA navigation --------
+    const sections = ['home','course','cards','perceptron'];
+    function show(id) {
+      sections.forEach(s => {
+        const el = document.getElementById(s);
+        if (!el) return;
+        el.classList.toggle('hidden', s !== id);
+      });
+      history.replaceState(null,'', '#'+id);
+    }
+    document.querySelectorAll('[data-goto]').forEach(btn => {
+      btn.addEventListener('click', () => show(btn.dataset.goto));
+    });
+    const initial = location.hash?.slice(1);
+    show(sections.includes(initial) ? initial : 'home');
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // -------- Progress --------
+    const PROG_KEY = 'nn-progress';
+    const progress = JSON.parse(localStorage.getItem(PROG_KEY) || '{"completedLessons": []}');
+    function updateProgressUI() {
+      const el = document.getElementById('progress');
+      if (el) el.textContent = progress.completedLessons.length;
+    }
+    updateProgressUI();
+
+    // -------- Quiz --------
+    const QUIZ_ANSWER = 1;
+    const resultEl = document.getElementById('quiz-result');
+    document.querySelectorAll('.quiz-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const i = Number(opt.dataset.i);
+        resultEl.textContent = i === QUIZ_ANSWER ? 'Верно ✅' : 'Неверно ❌';
+        resultEl.className = 'mt-3 font-semibold ' + (i === QUIZ_ANSWER ? 'text-green-600' : 'text-red-600');
+      });
+    });
+
+    // -------- Mark lesson complete & seed cards --------
+    document.getElementById('mark-complete').addEventListener('click', () => {
+      if (!progress.completedLessons.includes('intro-ml')) {
+        progress.completedLessons.push('intro-ml');
+        localStorage.setItem(PROG_KEY, JSON.stringify(progress));
+        updateProgressUI();
+        seedCards(); // добавим карточки в SR
+        alert('Урок отмечен как завершённый. Карточки добавлены в раздел «Карточки».');
+      }
+    });
+
+    // -------- Spaced Repetition (simplified SM-2) --------
+    const CARDS_KEY = 'nn-cards';
+    function now() { return Date.now(); }
+    function day(ms=1){ return 24*60*60*1000*ms; }
+
+    function rate(card, quality) {
+      let { EF, interval, repetitions } = card;
+      if (quality < 3) {
+        repetitions = 0;
+        interval = 1;
+      } else {
+        if (repetitions === 0) interval = 1;
+        else if (repetitions === 1) interval = 6;
+        else interval = Math.round(interval * EF);
+        repetitions += 1;
+      }
+      EF = Math.max(1.3, EF + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+      const due = now() + interval * day();
+      return { ...card, EF, interval, repetitions, due };
+    }
+
+    function loadCards() {
+      return JSON.parse(localStorage.getItem(CARDS_KEY) || '[]');
+    }
+    function saveCards(cards) {
+      localStorage.setItem(CARDS_KEY, JSON.stringify(cards));
+    }
+
+    function seedCards() {
+      const cards = loadCards();
+      if (!cards.find(c => c.id === 'c1')) {
+        cards.push({ id:'c1', front:'Bias-Variance', back:'Компромисс смещения-дисперсии', EF:2.5, interval:0, repetitions:0, due:0 });
+      }
+      saveCards(cards);
+      renderCards();
+    }
+
+    const cardFront = document.getElementById('card-front');
+    const cardBack = document.getElementById('card-back');
+    const cardUI = document.getElementById('card-ui');
+    const noCards = document.getElementById('no-cards');
+
+    let dueCards = [];
+    let currentIdx = 0;
+
+    function renderCards() {
+      const all = loadCards();
+      dueCards = all.filter(c => (c.due || 0) <= now());
+      currentIdx = 0;
+      if (dueCards.length === 0) {
+        noCards.classList.remove('hidden');
+        cardUI.classList.add('hidden');
+        return;
+      }
+      noCards.classList.add('hidden');
+      cardUI.classList.remove('hidden');
+      drawCard();
+    }
+
+    function drawCard() {
+      const c = dueCards[currentIdx];
+      if (!c) { renderCards(); return; }
+      cardFront.textContent = c.front;
+      cardBack.textContent = c.back;
+    }
+
+    document.querySelectorAll('#cards-container [data-q]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = Number(btn.dataset.q);
+        const cards = loadCards();
+        const idx = cards.findIndex(cc => cc.id === dueCards[currentIdx].id);
+        cards[idx] = rate(cards[idx], q);
+        saveCards(cards);
+        currentIdx++;
+        if (currentIdx >= dueCards.length) {
+          renderCards();
+        } else {
+          drawCard();
+        }
+      });
+    });
+
+    // Первичная инициализация карточек (если уже есть данные)
+    renderCards();
+
+    // -------- Perceptron demo --------
+    const canvas = document.getElementById('plot');
+    const ctx = canvas.getContext('2d');
+    const epochsEl = document.getElementById('epochs');
+    const lrEl = document.getElementById('lr');
+    const wbEl = document.getElementById('wb');
+
+    // Synthetic linearly separable dataset
+    function genData() {
+      const pts = [];
+      for (let i=0;i<50;i++){
+        const x = (Math.random()*2-1)*1.0;
+        const y = (Math.random()*2-1)*1.0;
+        const label = (y > 0.3*x + 0.1) ? 1 : 0; // true boundary
+        pts.push({x, y, label});
+      }
+      return pts;
+    }
+    let data = genData();
+
+    function toCanvas(x, y) {
+      const px = (x+1)*0.5*canvas.width;
+      const py = (1-(y+1)*0.5)*canvas.height;
+      return [px, py];
+    }
+
+    function draw(w, b) {
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      // axes
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2);
+      ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height);
+      ctx.stroke();
+
+      // points
+      for (const p of data) {
+        const [px, py] = toCanvas(p.x, p.y);
+        ctx.beginPath();
+        ctx.fillStyle = p.label ? '#16a34a' : '#ef4444';
+        ctx.arc(px, py, 4, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      // decision boundary: w0*x + w1*y + b = 0  => y = -(w0/w1)x - b/w1
+      if (w[1] !== 0) {
+        const x1 = -1, x2 = 1;
+        const y1 = -(w[0]/w[1])*x1 - b/w[1];
+        const y2 = -(w[0]/w[1])*x2 - b/w[1];
+        const [p1x, p1y] = toCanvas(x1, y1);
+        const [p2x, p2y] = toCanvas(x2, y2);
+        ctx.strokeStyle = '#0ea5e9';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(p1x, p1y);
+        ctx.lineTo(p2x, p2y);
+        ctx.stroke();
+      }
+    }
+
+    function trainPerceptron(data, epochs=10, lr=0.1) {
+      const w = [0, 0];
+      let b = 0;
+      for (let e = 0; e < epochs; e++) {
+        for (const p of data) {
+          const z = w[0]*p.x + w[1]*p.y + b;
+          const yhat = z >= 0 ? 1 : 0;
+          const err = p.label - yhat;
+          w[0] += lr * err * p.x;
+          w[1] += lr * err * p.y;
+          b += lr * err;
+        }
+      }
+      return { w, b };
+    }
+
+    function resetData(){
+      data = genData();
+      draw([0,0], 0);
+      wbEl.textContent = 'w=[0,0], b=0';
+    }
+
+    document.getElementById('train').addEventListener('click', () => {
+      const epochs = Math.max(1, Math.min(100, Number(epochsEl.value) || 10));
+      const lr = Math.max(0.01, Math.min(1, Number(lrEl.value) || 0.1));
+      const { w, b } = trainPerceptron(data, epochs, lr);
+      draw(w, b);
+      wbEl.textContent = 'w=['+w.map(v => v.toFixed(3)).join(', ')+'], b=' + b.toFixed(3);
+    });
+    document.getElementById('reset').addEventListener('click', resetData);
+
+    resetData();
+  </script>
+</body>
+</html>
